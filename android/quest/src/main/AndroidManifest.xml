@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-feature android:glEsVersion="0x00030000" android:required="true" />
+    <uses-feature android:name="android.hardware.vr.headtracking" android:required="true" android:version="1" />
+    <uses-feature android:name="com.oculus.feature.PASSTHROUGH" android:required="false" />
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+    <uses-feature android:name="android.hardware.sensor.gyroscope" android:required="false" />
+    <uses-feature android:name="android.hardware.gamepad" android:required="false" />
+    <uses-feature android:name="android.hardware.usb.host" android:required="false" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="false"
+        android:hardwareAccelerated="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="Wario Land 4 VR"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:resizeableActivity="false"
+        android:theme="@style/GbaTheme">
+        <meta-data android:name="com.samsung.android.vr.application.mode" android:value="vr_only" />
+        <meta-data android:name="com.oculus.supportedDevices" android:value="quest2|questpro|quest3|quest3s" />
+        <meta-data android:name="com.oculus.ossplash" android:value="true" />
+        <meta-data android:name="com.oculus.ossplash.background" android:value="black" />
+        <meta-data android:name="com.oculus.vr.focusaware" android:value="true" />
+
+        <meta-data android:name="gbarecomp.title" android:value="${gbaTitle}" />
+        <meta-data android:name="gbarecomp.rom_label" android:value="${gbaRomLabel}" />
+        <meta-data android:name="gbarecomp.rom_sha1" android:value="${gbaRomSha1}" />
+        <meta-data android:name="gbarecomp.rom_patch_source_sha1" android:value="${gbaRomPatchSourceSha1}" />
+        <meta-data android:name="gbarecomp.rom_size" android:value="${gbaRomSize}" />
+        <meta-data android:name="gbarecomp.rom_file" android:value="${gbaRomFile}" />
+        <meta-data android:name="gbarecomp.bios_required" android:value="${gbaBiosRequired}" />
+        <meta-data android:name="gbarecomp.bios_sha1" android:value="${gbaBiosSha1}" />
+        <meta-data android:name="gbarecomp.orientation" android:value="${gbaOrientation}" />
+        <meta-data android:name="gbarecomp.payload_version" android:value="${gbaPayloadVersion}" />
+        <meta-data android:name="gbarecomp.setup_note" android:value="${gbaSetupNote}" />
+        <meta-data android:name="gbarecomp.gyro" android:value="${gbaGyro}" />
+
+        <activity
+            android:name="com.wl4recomp.quest.WL4QuestSetupActivity"
+            android:alwaysRetainTaskState="true"
+            android:configChanges="layoutDirection|locale|orientation|uiMode|screenLayout|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation|density"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:preferMinimalPostProcessing="true"
+            android:screenOrientation="landscape">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.wl4recomp.quest.WL4QuestActivity"
+            android:alwaysRetainTaskState="true"
+            android:configChanges="layoutDirection|locale|orientation|uiMode|screenLayout|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation|density"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:preferMinimalPostProcessing="true"
+            android:screenOrientation="landscape">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.oculus.intent.category.VR" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

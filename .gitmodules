@@ -1,0 +1,8 @@
+[submodule "external/gbarecomp"]
+	path = external/gbarecomp
+	url = https://github.com/mrchrisster/gbarecomp.git
+	branch = wl4-vr
+[submodule "external/recomp-ui"]
+	path = external/recomp-ui
+	url = https://github.com/mrchrisster/recomp-ui.git
+	branch = wl4-vr

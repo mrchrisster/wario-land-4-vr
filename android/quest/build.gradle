@@ -1,0 +1,102 @@
+import java.security.MessageDigest
+
+plugins { id "com.android.application" }
+
+def repoRoot = file("../..")
+// Quest-VR gbarecomp + recomp-ui: submodules in external/ when present, else the sibling Mother3Recomp checkout.
+def submoduleRuntime = file("../../external/gbarecomp/CMakeLists.txt").exists()
+def gbaRoot = file(submoduleRuntime ? "../../external/gbarecomp" : "../../../Mother3Recomp/gbarecomp")
+def recompUiRoot = file(submoduleRuntime ? "../../external/recomp-ui" : "../../../Mother3Recomp/recomp-ui")
+def openxrDir = file(project.findProperty("openxrDir") ?: "../../../deps/oxr")
+def cmakePath = { File f -> f.canonicalPath }
+def romSha1 = "b9fe05a8080e124b67bce6a623234ee3b518a2c1"
+def privateRomProp = project.findProperty("privateRom")?.toString()?.trim()
+def privateRomPath = privateRomProp ? file(privateRomProp) : null
+def stagedPayload = layout.buildDirectory.dir("generated/questPayload")
+
+android {
+    namespace "com.wl4recomp.quest"
+    compileSdk 35
+    ndkVersion "28.2.13676358"
+
+    defaultConfig {
+        applicationId "com.wl4recomp.quest"
+        minSdk 29
+        targetSdk 32
+        versionCode 1
+        versionName "0.1-quest"
+        ndk { abiFilters "arm64-v8a" }
+        externalNativeBuild {
+            cmake {
+                targets "SDL2", "main"
+                arguments "-DANDROID_STL=c++_shared",
+                          "-DANDROID_PLATFORM=android-29",
+                          "-DCMAKE_BUILD_TYPE=Release",
+                          "-DGBA_GAME_ROOT=${cmakePath(repoRoot)}",
+                          "-DGBARECOMP_ROOT=${cmakePath(gbaRoot)}",
+                          "-DRECOMP_UI_ROOT=${cmakePath(recompUiRoot)}",
+                          "-DGBARECOMP_RUNTIME_UI_ROOT=${cmakePath(recompUiRoot)}",
+                          "-DGBARECOMP_QUEST_XR=ON",
+                          "-DGBARECOMP_OPENXR_INCLUDE_DIR=${cmakePath(new File(openxrDir, 'prefab/modules/headers/include'))}",
+                          "-DGBARECOMP_OPENXR_LIB=${cmakePath(new File(openxrDir, 'jni/arm64-v8a/libopenxr_loader.so'))}"
+            }
+        }
+        manifestPlaceholders = [
+            gbaTitle: "Wario Land 4 VR",
+            gbaRomLabel: "Wario Land 4 (USA, Europe)",
+            gbaRomSha1: romSha1,
+            gbaRomPatchSourceSha1: "",
+            gbaRomSize: "8388608",
+            gbaRomFile: "wario_land_4.gba",
+            gbaBiosRequired: "false",
+            gbaBiosSha1: "300c20df6731a33952ded8c436f7f186d25d3492",
+            gbaOrientation: "landscape",
+            gbaPayloadVersion: "wl4-quest-1",
+            gbaSetupNote: "Select your Wario Land 4 (USA, Europe) ROM. No GBA BIOS needed.",
+            gbaGyro: "false",
+        ]
+    }
+    buildTypes {
+        release { minifyEnabled false; signingConfig signingConfigs.debug }
+        debug { jniDebuggable false }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    externalNativeBuild {
+        cmake { path new File(gbaRoot, "platform/android/cpp/CMakeLists.txt"); version "3.22.1" }
+    }
+    sourceSets {
+        main {
+            manifest.srcFile "src/main/AndroidManifest.xml"
+            java.srcDirs = ["src/main/java",
+                new File(gbaRoot, "platform/android/java"),
+                new File(gbaRoot, "platform/android/third_party/SDL/android-project/app/src/main/java")]
+            res.srcDirs = ["../app/src/main/res", new File(gbaRoot, "platform/android/res")]
+            jniLibs.srcDirs = [new File(openxrDir, "jni")]
+            assets.srcDirs = [stagedPayload]
+        }
+    }
+    androidResources { noCompress += ["gba", "bin"] }
+}
+
+tasks.register("stageQuestPayload", Sync) {
+    inputs.property("privateRom", privateRomPath ? privateRomPath.absolutePath : "")
+    from(file("../game_android.toml")) { into("payload/variants/wario_land_4"); rename { "game.toml" } }
+    if (privateRomPath != null) {
+        from(privateRomPath) { into("payload/roms"); rename { "wario_land_4.gba" } }
+        doFirst {
+            def sha = MessageDigest.getInstance("SHA-1").digest(privateRomPath.bytes).collect { String.format("%02x", it) }.join()
+            if (sha != romSha1) throw new GradleException("Private ROM SHA-1 mismatch: ${sha}")
+        }
+    }
+    into(stagedPayload)
+}
+tasks.named("preBuild").configure { dependsOn("stageQuestPayload") }
+
+android.applicationVariants.configureEach { variant ->
+    variant.outputs.configureEach { output ->
+        output.outputFileName = "wl4-quest-${variant.buildType.name}${privateRomPath ? '-PRIVATE-rom-included' : ''}.apk"
+    }
+}

@@ -1,0 +1,39 @@
+# Never commit the ROM or anything derived from it
+*.gba
+*.GBA
+*.bin
+roms/
+variants/wario_land_4/generated/
+recomp_cache/
+recomp_coverage_*.json
+recomp_master_misses_*.toml.frag
+*.rgba
+menu_logo*
+
+# Saves, save states, captures (game imagery)
+saves/
+*.sav
+*.state*
+*.suspend*
+captures/
+
+# Build output
+build-mac/
+build/
+android/build/
+android/quest/build/
+android/.gradle/
+android/quest/.cxx/
+android/local.properties
+android/build.log
+*.apk
+*.log
+*.keystore
+*.p12
+
+# Local tooling / junk
+CLAUDE.md
+.claude/
+__pycache__/
+*.pyc
+.DS_Store

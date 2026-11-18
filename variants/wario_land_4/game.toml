@@ -1,0 +1,341 @@
+# Wario Land 4 (USA, Europe), AWAE. First bring-up config: automatic analysis only.
+[game]
+name = "Wario Land 4"
+short_name = "wario_land_4"
+default_region = "usa"
+
+[program]
+name = "Wario Land 4 (USA, Europe)"
+id = "AWAE"
+load_address = 0x08000000
+size = 0x00800000
+entry_pc = 0x08000000
+speculative_literal_harvest = false
+static_resume_all = true
+codegen_shards = 16
+
+[identity]
+sha1 = "b9fe05a8080e124b67bce6a623234ee3b518a2c1"
+
+[bios]
+hle = true
+
+[rom]
+path = "roms/wario_land_4.gba"
+sha1 = "b9fe05a8080e124b67bce6a623234ee3b518a2c1"
+
+[save]
+type = "sram"
+size = 32768
+path = "../../saves/wario_land_4.sav"
+
+[runtime]
+debug_port = 19880
+window_title = "WarioLand4Recomp"
+
+[video]
+screen = "raw"
+view_width = 240
+resize_view = false
+
+[audio]
+shadow = false
+
+[[code_copy]]
+runtime_start = 0x03000C44
+source_start = 0x080000FC
+size = 0x800
+name = "iwram_irq_block"
+note = "DMA3 copy, literals at 0x080009F8 (src 0x080000FC, dst 0x03000C44, 0x400 halfwords)"
+
+[[code_copy]]
+runtime_start = 0x03004B28
+source_start = 0x080010F4
+size = 0x400
+name = "iwram_code_block"
+note = "CpuSet at 0x08001D22: src 0x080010F5&~1, dst 0x03004B28, 0x100 words"
+
+[[extra_func]]
+addr = 0x03004B28
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x03004B8A
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x03004BEC
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x03004BFC
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x03004C18
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x03004C6C
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x03004C74
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x03004C80
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x03004C9C
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x03004CA6
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x08001498
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x080014B0
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x080015CC
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x080015D2
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x080015E0
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x080015E6
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x080015F4
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x0800160E
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x08001616
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x0800161E
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x08001624
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x0800162A
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x08001638
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x0800163E
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x0800164C
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x08001652
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x08001660
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x08001666
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x08001674
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x0800167A
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x08001680
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x08001686
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x08001710
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x0800172C
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x08001750
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x080017B4
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x08001824
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x080018CC
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x080018F4
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x08001C54
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x08001C68
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x080014D0
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x080014EE
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x08001558
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x08001560
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x0800157C
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x08001BEC
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x0300322C
+mode = "thumb"
+note = "self-heal miss"
+
+[[extra_func]]
+addr = 0x080717E4
+mode = "thumb"
+note = "HBlank raster routine; DMA-copied to IWRAM 0x0300322C per room (copy at 0x08071740)"
+
+[[extra_func]]
+addr = 0x0807180C
+mode = "thumb"
+note = "HBlank raster routine; DMA-copied to IWRAM 0x0300322C per room (copy at 0x08071740)"
+
+[[extra_func]]
+addr = 0x08071834
+mode = "thumb"
+note = "HBlank raster routine; DMA-copied to IWRAM 0x0300322C per room (copy at 0x08071740)"
+
+[[extra_func]]
+addr = 0x08071964
+mode = "thumb"
+note = "HBlank raster routine; DMA-copied to IWRAM 0x0300322C per room (copy at 0x08071740)"
+
+[[extra_func]]
+addr = 0x0807185C
+mode = "thumb"
+note = "HBlank raster routine variant (table 0x080716AC..0x08071748), DMA-copied to IWRAM 0x0300322C"
+
+[[extra_func]]
+addr = 0x080718A0
+mode = "thumb"
+note = "HBlank raster routine variant (table 0x080716AC..0x08071748), DMA-copied to IWRAM 0x0300322C"
+
+[[extra_func]]
+addr = 0x080718E4
+mode = "thumb"
+note = "HBlank raster routine variant (table 0x080716AC..0x08071748), DMA-copied to IWRAM 0x0300322C"
+
+[[extra_func]]
+addr = 0x08071924
+mode = "thumb"
+note = "HBlank raster routine variant (table 0x080716AC..0x08071748), DMA-copied to IWRAM 0x0300322C"
+
+[[extra_func]]
+addr = 0x080719A8
+mode = "thumb"
+note = "HBlank raster routine variant (table 0x080716AC..0x08071748), DMA-copied to IWRAM 0x0300322C"

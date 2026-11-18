@@ -1,0 +1,31 @@
+# Android-installed runtime configuration (packaged as variants/wario_land_4/game.toml in app storage).
+[game]
+name = "Wario Land 4"
+short_name = "wario_land_4"
+default_region = "usa"
+
+[program]
+name = "Wario Land 4 (USA, Europe)"
+id = "AWAE"
+load_address = 0x08000000
+size = 0x00800000
+entry_pc = 0x08000000
+
+[identity]
+sha1 = "b9fe05a8080e124b67bce6a623234ee3b518a2c1"
+
+[bios]
+hle = true
+
+[rom]
+path = "../../roms/wario_land_4.gba"
+sha1 = "b9fe05a8080e124b67bce6a623234ee3b518a2c1"
+
+[save]
+type = "sram"
+size = 32768
+path = "../../saves/wario_land_4.sav"
+
+[runtime]
+debug_port = 19880
+window_title = "WarioLand4Recomp"
