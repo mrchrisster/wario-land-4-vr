@@ -6,7 +6,7 @@ Wario Land 4 for the Game Boy Advance, played in layered stereoscopic depth on M
 
 *Click to watch the gameplay video on YouTube.*
 
-This is an unofficial fan project. No ROM, game code, graphics or save data is included. You need your own legally owned copy of **Wario Land 4 (USA, Europe)** (`sha1 b9fe05a8080e124b67bce6a623234ee3b518a2c1`) and you build everything yourself.
+This is an unofficial fan project. No ROM, graphics or save data is included. You need your own legally owned copy of **Wario Land 4 (USA, Europe)** (`sha1 b9fe05a8080e124b67bce6a623234ee3b518a2c1`). Download the Quest APK from [Releases](https://github.com/mrchrisster/wario-land-4-vr/releases/latest) and pick your ROM on first launch, or build it yourself from source.
 
 ## Why this exists
 
@@ -49,7 +49,18 @@ The stock gbarecomp Quest layer mode puts each GBA priority on a plane. Wario La
 
 `variants/wario_land_4/generated/` is created from your ROM when you build and is never committed.
 
-## Building
+## Installing on Quest
+
+1. Download `wario-land-4-vr-quest.apk` from the [latest release](https://github.com/mrchrisster/wario-land-4-vr/releases/latest).
+2. With developer mode on, sideload it: `adb install -r wario-land-4-vr-quest.apk` (or use SideQuest).
+3. Launch **Wario Land 4 VR** from Unknown Sources and pick your own **Wario Land 4 (USA, Europe)** `.gba` file. It's checked by SHA-1 and copied into the app, so you only do this once. No BIOS is needed.
+
+The options menu shows the game's logo only in builds where it was extracted from your ROM (`tools/make_menu_logo.sh`); the release APK doesn't include it.
+
+## Building from source
+
+If you'd rather build it yourself, or want the Mac layer view:
+
 
 You need macOS with Xcode command line tools, CMake, SDL2 (Homebrew), and for Quest, Android Studio with the NDK and an OpenXR loader.
 
@@ -86,4 +97,4 @@ The GBA buttons are on the Touch controllers. Left Menu opens the options menu (
 
 ## Legal
 
-Wario Land 4 is © Nintendo. This project is not affiliated with or endorsed by Nintendo. It contains no Nintendo code or assets: the ROM, the code generated from it, save files, save states and the menu logo all stay on your own machine. The gbarecomp runtime is under the PolyForm Noncommercial 1.0.0 license and recomp-ui under MIT; see their repositories.
+Wario Land 4 is © Nintendo. This project is not affiliated with or endorsed by Nintendo. This repository contains no Nintendo code or assets: the ROM, the code generated from it, save files, save states and the menu logo stay on your own machine. The release APK contains the recompiled program but no ROM, graphics, sound or save data; the game's data is read from the ROM you supply. The gbarecomp runtime is under the PolyForm Noncommercial 1.0.0 license and recomp-ui under MIT; see their repositories.

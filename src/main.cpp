@@ -45,6 +45,11 @@ extern "C" int g_layered_flat_bitmap;
 extern "C" int g_layered_sprite_layer;
 extern "C" void (*g_layered_bg_split_row)(int bg, int y, const uint8_t* io, const uint8_t* vram,
                                           uint8_t* out, int width);
+extern "C" void (*g_layered_bg_hide_row)(int bg, int y, const uint8_t* io, const uint8_t* vram,
+                                         uint8_t* out, int width);
+extern "C" int g_ws_pillarbox;
+extern "C" int g_ws_margin_window_clamp;
+extern "C" void (*g_ws_frame_start)();
 extern "C" int g_layered_fog_alpha;
 extern "C" float g_layered_split_push;
 extern "C" float g_layered_sprite_depth;
@@ -231,6 +236,90 @@ void wl4_split_row(int bg, int y, const uint8_t* io, const uint8_t* vram, uint8_
 }
 }  // namespace
 
+namespace {
+// Wario Land 4 keeps placeholder art (a dashed dark tile, 0x2EA in Palm Tree Paradise) in BG1 under
+// the grass and ground of BG0: the GBA never shows it, but layers pulled apart in depth let it peek
+// out. Drop a BG pixel when a front BG covers it and its tile was (almost) never visible last frame.
+struct Wl4BgView {
+    bool on = false, bpp8 = false;
+    uint32_t sb = 0, mw = 256, mh = 256, hofs = 0, vofs = 0, cb = 0, prio = 0;
+};
+Wl4BgView wl4_bg_view(int b, const uint8_t* io) {
+    Wl4BgView v;
+    const uint16_t disp = rd16(io);
+    v.on = (disp & 7u) == 0 && (disp & (0x100u << b));
+    const uint16_t cnt = rd16(io + 0x08 + 2 * b);
+    v.prio = cnt & 3u;
+    v.sb = ((cnt >> 8) & 31u) * 0x800u;
+    const uint32_t size = (cnt >> 14) & 3u;
+    v.mw = (size & 1u) ? 512u : 256u;
+    v.mh = (size & 2u) ? 512u : 256u;
+    v.hofs = rd16(io + 0x10 + 4 * b) & 0x1FFu;
+    v.vofs = rd16(io + 0x12 + 4 * b) & 0x1FFu;
+    v.bpp8 = (cnt & 0x80u) != 0;
+    v.cb = ((cnt >> 2) & 3u) * 0x4000u;
+    return v;
+}
+// Tile index (bits 0-9) of the pixel, or -1 when transparent.
+int wl4_bg_pixel(const Wl4BgView& v, const uint8_t* vram, int x, int y) {
+    const uint32_t px = (static_cast<uint32_t>(x) + v.hofs) & (v.mw - 1u);
+    const uint32_t py = (static_cast<uint32_t>(y) + v.vofs) & (v.mh - 1u);
+    const uint32_t blk = (px >> 8) + (py >> 8) * (v.mw == 512u ? 2u : 1u);
+    const uint16_t e = rd16(vram + v.sb + blk * 0x800u + (((py & 255u) >> 3) * 32u + ((px & 255u) >> 3)) * 2u);
+    const uint32_t tx = (e & 0x400u) ? 7u - (px & 7u) : (px & 7u);
+    const uint32_t ty = (e & 0x800u) ? 7u - (py & 7u) : (py & 7u);
+    int c;
+    if (v.bpp8) {
+        const uint32_t addr = v.cb + (e & 0x3FFu) * 64u + ty * 8u + tx;
+        if (addr >= 0x10000u) return -1;
+        c = vram[addr];
+    } else {
+        const uint32_t addr = v.cb + (e & 0x3FFu) * 32u + ty * 4u + (tx >> 1);
+        if (addr >= 0x10000u) return -1;
+        c = (tx & 1u) ? (vram[addr] >> 4) : (vram[addr] & 15);
+    }
+    return c ? static_cast<int>(e & 0x3FFu) : -1;
+}
+void wl4_hide_row(int bg, int y, const uint8_t* io, const uint8_t* vram, uint8_t* out, int width) {
+    static uint32_t vis_now[4][1024], tot_now[4][1024], vis_prev[4][1024], tot_prev[4][1024];
+    static int last_y[4] = {-1, -1, -1, -1};
+    if (y <= last_y[bg]) {
+        std::memcpy(vis_prev[bg], vis_now[bg], sizeof(vis_now[bg]));
+        std::memcpy(tot_prev[bg], tot_now[bg], sizeof(tot_now[bg]));
+        std::memset(vis_now[bg], 0, sizeof(vis_now[bg]));
+        std::memset(tot_now[bg], 0, sizeof(tot_now[bg]));
+    }
+    last_y[bg] = y;
+    // Only BG1, WL4's main layer (the one with the placeholders): scenery BGs such as the sky
+    // are legitimately covered almost everywhere and must stay whole for the depth view.
+    if (bg != 1) return;
+    const Wl4BgView me = wl4_bg_view(bg, io);
+    if (!me.on) return;
+    // Front BGs that hide what is under them (not alpha-blended first targets: fog shows through).
+    const uint16_t bld = rd16(io + 0x50);
+    const bool alpha = ((bld >> 6) & 3u) == 1u;
+    Wl4BgView front[3];
+    int nf = 0;
+    for (int c = 0; c < 4; ++c) {
+        if (c == bg) continue;
+        const Wl4BgView v = wl4_bg_view(c, io);
+        if (!v.on || !(v.prio < me.prio || (v.prio == me.prio && c < bg))) continue;
+        if (alpha && (bld & (1u << c))) continue;
+        front[nf++] = v;
+    }
+    for (int x = 0; x < width; ++x) {
+        const int t = wl4_bg_pixel(me, vram, x, y);
+        if (t < 0) continue;
+        bool covered = false;
+        for (int k = 0; k < nf && !covered; ++k) covered = wl4_bg_pixel(front[k], vram, x, y) >= 0;
+        ++tot_now[bg][t];
+        if (!covered) { ++vis_now[bg][t]; continue; }
+        // a tile the GBA showed for at most 1% of its pixels last frame is placeholder art
+        if (tot_prev[bg][t] >= 32u && vis_prev[bg][t] * 100u <= tot_prev[bg][t]) out[x] = 1;
+    }
+}
+}  // namespace
+
 int wl4_main(int argc, char** argv) {
     std::vector<std::string> args(argv, argv + argc);
     // Android: private-storage layout, log file, staged game TOML and no
@@ -263,6 +352,12 @@ int wl4_main(int argc, char** argv) {
     g_layered_fog_alpha = 1;
     // Split decoration from terrain inside a gameplay layer (game terrain table).
     g_layered_bg_split_row = wl4_split_row;
+    g_layered_bg_hide_row = wl4_hide_row;
+    // Shadow-box margins: render the real level beyond the 240 px screen (the BG tilemap holds it),
+    // never the post-load pillarbox black. Host decides the width (GBARECOMP_VIEW_WIDTH).
+    g_ws_frame_start = [] { g_ws_pillarbox = 0; };
+    g_ws_margin_window_clamp = 1;
+    if (const char* e = std::getenv("WL4_HIDE_COVERED"); e && *e == '0') g_layered_bg_hide_row = nullptr;
     g_layered_split_push = 0.0f;  // (0.12 tried 2026-11-17: Christoph asked to revert it)
     if (const char* e = std::getenv("WL4_SPLIT_PUSH")) g_layered_split_push = static_cast<float>(std::atof(e));
     if (const char* e = std::getenv("WL4_SPLIT_DECOR"); e && *e == '0') g_layered_bg_split_row = nullptr;  // fog/water stay their own see-through layer
@@ -293,6 +388,8 @@ int wl4_main(int argc, char** argv) {
     opts.resume_suspend_state_on_launch = true;
     opts.resume_newest_state_on_launch = true;
     opts.snapshot_on_battery_flush = true;  // in-game saves also refresh the resume state
+    // Shadow-box margins show real level content: render 24 px beyond each side of the screen.
+    opts.max_view_width = 288;
     // Local debug observer (Quest-local 127.0.0.1:19880, reached via adb forward): lets
     // tools/quest_update.sh save the running game before installing a new build.
     setenv("GBARECOMP_TCP_OBSERVE", "19880", 0);
@@ -314,6 +411,8 @@ int wl4_main(int argc, char** argv) {
     setenv("GBARECOMP_XR_BOXWALLS", "0", 0);
     setenv("GBARECOMP_XR_WINDOW", "0", 0);
     setenv("GBARECOMP_XR_DARK", "1", 0);
+    setenv("GBARECOMP_VIEW_WIDTH", "288", 0);   // 240 + 2 x shadow-box margin (24)
+    setenv("GBARECOMP_XR_MARGIN_RENDER", "1", 0);
 #endif
 
 #if defined(GBAGAME_RECOMP_UI)
