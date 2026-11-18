@@ -22,7 +22,6 @@ The same idea was applied earlier to another Wario title: **[WarioWare: Twisted!
 
 The game is not emulated. It is statically recompiled with [gbarecomp](https://github.com/mstan/gbarecomp): the ARM code from your ROM is translated into C++ once and compiled into a native Mac or Quest app. The GBA picture unit (PPU) is reimplemented in that runtime, and that is where the depth comes from. Instead of mixing the four backgrounds and the sprites into one 240x160 image, the renderer writes each piece onto its own plane, and the Quest app draws those planes as separate OpenXR layers at different distances.
 
-Every plane recomposites to the exact GBA frame (0 pixel difference at all 18 level starts), so viewed straight on the game looks like the original. The depth only appears when you look with two eyes or move your head.
 
 ## What's changed compared with the stock recomp
 
