@@ -10,7 +10,7 @@ This is an unofficial fan project. No ROM, game code, graphics or save data is i
 
 ## Why this exists
 
-The Virtual Boy is remembered as Nintendo's big flop, and most of its library deserves that. Virtual Boy Wario Land is the exception. It is the one game on the system that really works, and it works because of the 3D: Wario runs along a foreground, jumps into the background, and the stage is a stack of flat layers at different distances. The depth isn't a gimmick on top of the platforming, it is how you read the level.
+The Virtual Boy is remembered as Nintendo's big flop, and some of its library deserves that. Virtual Boy Wario Land is the exception. It is the one game on the system that really works, and it works because of the 3D: Wario runs along a foreground, jumps into the background, and the stage is a stack of flat layers at different distances. The depth isn't a gimmick on top of the platforming, it is how you read the level.
 
 That game never got a sequel in the same style. Wario Land 4 is the best 2D Wario game, and its levels are already drawn as separate hardware layers: a far parallax sky, a back wall, the terrain Wario walks on, and see-through foreground covers like water, fog and hidden-wall overlays. This port takes those layers apart and puts each one at its own distance in a headset, so Wario Land 4 plays like the Virtual Boy game could have looked with a full colour palette and a proper screen.
 
