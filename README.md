@@ -2,6 +2,10 @@
 
 Wario Land 4 for the Game Boy Advance, played in layered stereoscopic depth on Meta Quest, the way Virtual Boy Wario Land looked in 1995.
 
+[![Wario Land 4 VR gameplay on Meta Quest](https://img.youtube.com/vi/fdBW9pHtGyo/maxresdefault.jpg)](https://youtu.be/fdBW9pHtGyo)
+
+*Click to watch the gameplay video on YouTube.*
+
 This is an unofficial fan project. No ROM, game code, graphics or save data is included. You need your own legally owned copy of **Wario Land 4 (USA, Europe)** (`sha1 b9fe05a8080e124b67bce6a623234ee3b518a2c1`) and you build everything yourself.
 
 ## Why this exists
