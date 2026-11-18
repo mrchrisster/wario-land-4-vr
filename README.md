@@ -10,8 +10,8 @@ This is an unofficial fan project. No ROM, game code, graphics or save data is i
 
 ## Why this exists
 
-The Virtual Boy is remembered as Nintendo's big flop, and some of its library deserves that. Virtual Boy Wario Land is the exception. It is the one game on the system that really stands out, and it works because it's fun - cool puzzles and secrets and in 3D.
-
+Nintendo was way ahead of its time with the Virtual Boy, and it vanished before its library ever had a real chance—cut short by a cumbersome tabletop setup and eye-fatiguing displays. Virtual Boy Wario Land is proof of what the system could have been. It stands out because it’s simply a blast to play, packed with clever puzzles, hidden secrets, and genuinely cool 3D effects.  
+  
 That game never got a sequel in the same style. Wario Land 4 is the best 2D Wario game, and its levels are already drawn as separate hardware layers: a far parallax sky, a back wall, the terrain Wario walks on, and see-through foreground covers like water, fog and hidden-wall overlays. This port takes those layers apart and puts each one at its own distance in a headset, so Wario Land 4 plays like the Virtual Boy game could have looked with a full colour palette and a proper screen.
 
 If you know Wario Land 4 well, it's a new way to see levels you already know. Secret walls read as a layer floating in front of the path, the parallax skies sit far behind the room, platforms stand out from the decoration around them, and Wario has his own depth between the back wall and the scenery the GBA draws over him.
